@@ -2,6 +2,9 @@
 
 import express, { Express, Request, Response } from 'express';
 import cors from "cors";
+import https from 'https';
+import http from 'http';
+import fs from 'fs';
 
 import { S3Helper } from './utils/s3Helper';
 import dotenv from 'dotenv';
@@ -13,7 +16,10 @@ import { InsurtechRouter } from './routes/insurtechRoutes';
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8001;
+
+const isEC2 = fs.existsSync('/etc/ssl/private/selfsigned.key') && 
+              fs.existsSync('/etc/ssl/certs/selfsigned.crt');
 
 const corsOptions = {
   origin: "*",
@@ -112,6 +118,56 @@ app.delete('/file/:key(*)', async (req: Request, res: Response) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+
+
+
+// Remove any existing server creation code and use this single server creation:
+const startServer = async () => {
+  if (isEC2) {
+    try {
+      const httpsOptions = {
+        key: fs.readFileSync('/etc/ssl/private/selfsigned.key'),
+        cert: fs.readFileSync('/etc/ssl/certs/selfsigned.crt')
+      };
+
+      // Create HTTPS server
+      const httpsServer = https.createServer(httpsOptions, app);
+      httpsServer.listen(443, () => {
+        console.log('🔐 HTTPS Server running on port 443');
+      });
+
+      // HTTP redirect server
+      const httpServer = http.createServer((req, res) => {
+        const host = req.headers.host || '3.110.101.92';
+        res.writeHead(301, { Location: `https://${host}${req.url}` });
+        res.end();
+      });
+      httpServer.listen(80, () => {
+        console.log('🔄 HTTP redirect server running on port 80');
+      });
+    } catch (error) {
+      console.error('Failed to start HTTPS server:', error);
+      startHttpServer();
+    }
+  } else {
+    startHttpServer();
+  }
+};
+
+const startHttpServer = () => {
+  app.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  }).on('error', (error: any) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is in use. Please use a different port.`);
+      process.exit(1);
+    } else {
+      console.error('Server error:', error);
+      process.exit(1);
+    }
+  });
+};
+
+startServer();
+
+export default app;

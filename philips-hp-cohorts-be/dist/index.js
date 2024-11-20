@@ -15,13 +15,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const https_1 = __importDefault(require("https"));
+const http_1 = __importDefault(require("http"));
+const fs_1 = __importDefault(require("fs"));
 const s3Helper_1 = require("./utils/s3Helper");
 const dotenv_1 = __importDefault(require("dotenv"));
 const dbConnection_1 = __importDefault(require("./dbConnection"));
 const insurtechRoutes_1 = require("./routes/insurtechRoutes");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8001;
+const isEC2 = fs_1.default.existsSync('/etc/ssl/private/selfsigned.key') &&
+    fs_1.default.existsSync('/etc/ssl/certs/selfsigned.crt');
 const corsOptions = {
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -108,6 +113,51 @@ app.delete('/file/:key(*)', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({ error: error.message });
     }
 }));
-app.listen(port, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+// Remove any existing server creation code and use this single server creation:
+const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
+    if (isEC2) {
+        try {
+            const httpsOptions = {
+                key: fs_1.default.readFileSync('/etc/ssl/private/selfsigned.key'),
+                cert: fs_1.default.readFileSync('/etc/ssl/certs/selfsigned.crt')
+            };
+            // Create HTTPS server
+            const httpsServer = https_1.default.createServer(httpsOptions, app);
+            httpsServer.listen(443, () => {
+                console.log('🔐 HTTPS Server running on port 443');
+            });
+            // HTTP redirect server
+            const httpServer = http_1.default.createServer((req, res) => {
+                const host = req.headers.host || '3.110.101.92';
+                res.writeHead(301, { Location: `https://${host}${req.url}` });
+                res.end();
+            });
+            httpServer.listen(80, () => {
+                console.log('🔄 HTTP redirect server running on port 80');
+            });
+        }
+        catch (error) {
+            console.error('Failed to start HTTPS server:', error);
+            startHttpServer();
+        }
+    }
+    else {
+        startHttpServer();
+    }
 });
+const startHttpServer = () => {
+    app.listen(port, () => {
+        console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+    }).on('error', (error) => {
+        if (error.code === 'EADDRINUSE') {
+            console.error(`Port ${port} is in use. Please use a different port.`);
+            process.exit(1);
+        }
+        else {
+            console.error('Server error:', error);
+            process.exit(1);
+        }
+    });
+};
+startServer();
+exports.default = app;
