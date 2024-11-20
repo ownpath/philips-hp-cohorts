@@ -25,6 +25,16 @@ interface UnGroupedUser {
   id: string;
 }
 
+interface SeverityContainer {
+  xRange: [number, number];
+  color: string;
+  backgroundClass: string;
+}
+
+type SeverityContainers = {
+  [key in 1 | 2 | 3 | 4 | 5]: SeverityContainer;
+}
+
 interface InsuranceData {
   bubbleGroups: BubbleGroup[];
   ungroupedUsers: UnGroupedUser[];
@@ -48,33 +58,14 @@ const queryClient = new QueryClient({
 });
 
 // Severity container configuration
-const severityContainers = {
-  1: { 
-    xRange: [0, 20],
-    color: '#4ade80',
-    backgroundClass: 'bg-success-green/10' 
-  },
-  2: { 
-    xRange: [20, 40],
-    color: '#bef264',
-    backgroundClass: 'bg-lime-50'
-  },
-  3: { 
-    xRange: [40, 60],
-    color: '#fcd34d',
-    backgroundClass: 'bg-warning-yellow/10'
-  },
-  4: { 
-    xRange: [60, 80],
-    color: '#fb923c',
-    backgroundClass: 'bg-orange-50'
-  },
-  5: { 
-    xRange: [80, 100],
-    color: '#ef4444',
-    backgroundClass: 'bg-danger-red/10'
-  }
+const severityContainers: SeverityContainers = {
+  1: { xRange: [0, 20], color: '#4ade80', backgroundClass: 'bg-success-green/10' },
+  2: { xRange: [20, 40], color: '#bef264', backgroundClass: 'bg-lime-50' },
+  3: { xRange: [40, 60], color: '#fcd34d', backgroundClass: 'bg-warning-yellow/10' },
+  4: { xRange: [60, 80], color: '#fb923c', backgroundClass: 'bg-orange-50' },
+  5: { xRange: [80, 100], color: '#ef4444', backgroundClass: 'bg-danger-red/10' }
 };
+
 
 // Bubble size configuration with responsive scaling
 const BUBBLE_SIZES = {
@@ -223,6 +214,16 @@ const AverageScoreCard: React.FC<{
     cohortHealth: number;
     cohortStressLevel: string;
   }> = ({ totalScans, cohortHealth, cohortStressLevel }) => {
+    const [width, setWidth] = useState(640);
+  
+    // Use useEffect to access window after mount
+    useEffect(() => {
+      setWidth(window.innerWidth);
+      const handleResize = () => setWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+  
     const statsData = React.useMemo(() => {
       const startPoint = Math.max(30, Math.floor(totalScans * 0.35));
       const midPoint = Math.floor(totalScans * 0.6);
@@ -242,7 +243,7 @@ const AverageScoreCard: React.FC<{
           <div className="flex-1 min-w-[160px] sm:min-w-[200px]">
             <div className="flex items-center gap-2 mb-3 sm:mb-4 lg:mb-6">
               <span className="text-xl sm:text-2xl md:text-3xl tv-sm:text-display 
-                             tv-md:text-4xl font-bold text-black">
+                             tv-md:text-4xl tv-lg:text-5xl tv-xl:text-6xl font-bold text-black">
                 {totalScans}
               </span>
               <span className="text-sm sm:text-base tv-sm:text-label text-gray-600 mt-1">
@@ -273,7 +274,7 @@ const AverageScoreCard: React.FC<{
                     axisLine={false}
                     tickLine={false}
                     tick={{ 
-                      fontSize: window.innerWidth < 640 ? 10 : 12,
+                      fontSize: width < 640 ? 10 : 12,
                       fill: '#6b7280' 
                     }}
                   />
@@ -507,73 +508,72 @@ const Header: React.FC<{
     bubbleGroups: BubbleGroup[];
     ungroupedUsers: UserBubbleData[];
     bubblePositions: Record<string, BubblePosition>;
-  }> = ({ bubbleGroups, ungroupedUsers, bubblePositions }) => {
+    totalDesiredBubbles: number;
+  }> = ({ bubbleGroups, ungroupedUsers, bubblePositions, totalDesiredBubbles }) => {
+    const activeCount = bubbleGroups.length + ungroupedUsers.length;
+    const backgroundCount = Math.max(0, totalDesiredBubbles - activeCount);
+  
+    const backgroundBubbles = Array.from({ length: backgroundCount }, (_, i) => ({
+      id: `background-${i}`,
+      isBackground: true
+    }));
+  
     return (
-      <div className="flex-1 min-h-[60vh] flex items-center justify-center py-8">
-        {/* Main container with correct positioning */}
-        <div className="relative w-full h-full max-h-[500px] flex items-center">
-          {/* Rest of the existing content remains the same */}
-          {/* Risk indicators */}
-          <div className="absolute left-16 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center">
-              <img src="/happy.svg" alt="Doing Great" className="w-20 h-20 object-contain fill-[#25D07D]" />
-            </div>
-            <span className="mt-2 font-bold text-black">Doing Great</span>
+      <div className="w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full flex items-center">
+        {/* Risk indicators */}
+        <div className="absolute left-16 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center">
+            <img src="/happy.svg" alt="Doing Great" className="w-20 h-20 object-contain fill-[#25D07D]" />
           </div>
-  
-          <div className="absolute right-16 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center">
-              <img src="/sad.svg" alt="Claim Risk" className="w-20 h-20 object-contain overflow-hidden fill-[#E43404]" />
-            </div>
-            <span className="mt-2 font-bold text-black">Claim Risk</span>
+          <span className="mt-2 font-bold text-black">Doing Great</span>
+        </div>
+
+        <div className="absolute right-16 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center">
+            <img src="/sad.svg" alt="Claim Risk" className="w-20 h-20 object-contain overflow-hidden fill-[#E43404]" />
           </div>
+          <span className="mt-2 font-bold text-black">Claim Risk</span>
+        </div>
+
+        {/* Gradient line */}
+        <div className="absolute left-32 right-32 top-1/2 -translate-y-1/2 z-20">
+          <div className="h-1 w-full bg-gradient-to-r from-[#25D07D] via-[#fcd34d] to-[#E43404]" />
+        </div>
+          <div className="absolute inset-x-32 top-[10%] bottom-[10%]">
+            <AnimatePresence mode="popLayout">
+              {backgroundBubbles.map((bubble) => {
+                const position = bubblePositions[bubble.id];
+                return position && (
+                  <Bubble
+                    key={bubble.id}
+                    id={bubble.id}
+                    x={position.x}
+                    y={position.y}
+                    size="sm"
+                    isGrey={true}
+                  />
+                );
+              })}
+            </AnimatePresence>
   
-          {/* Gradient line */}
-          <div className="absolute left-32 right-32 top-1/2 -translate-y-1/2 z-20">
-            <div className="h-1 w-full bg-gradient-to-r from-[#25D07D] via-[#fcd34d] to-[#E43404]" />
-          </div>
-  
-          {/* Bubble container */}
-          <div className="absolute inset-0 mx-32 flex">
-            {Object.entries(severityContainers).map(([severity, container]) => (
-              <div key={severity} className="relative flex-1 h-full flex items-center">
-                {/* Grey background bubbles */}
-                <AnimatePresence mode="popLayout">
-                  {ungroupedUsers
-                    .filter(user => {
-                      const position = bubblePositions[user.id];
-                      const xPercentage = position ? position.x : 0;
-                      return xPercentage >= container.xRange[0] && xPercentage < container.xRange[1];
-                    })
-                    .map((user) => (
-                      <Bubble
-                        key={`ungrouped-${user.id}`}
-                        id={user.id}
-                        x={bubblePositions[user.id]?.x ?? 0}
-                        y={bubblePositions[user.id]?.y ?? 0}
-                        size="sm"
-                        isGrey={true}
-                      />
-                    ))}
-                </AnimatePresence>
-  
-                {/* Colored bubbles */}
-                <AnimatePresence mode="popLayout">
-                  {bubbleGroups
-                    .filter(group => group.severity === Number(severity))
-                    .map((group) => (
-                      <Bubble
-                        key={`group-${group.id}`}
-                        id={group.id}
-                        x={bubblePositions[group.id]?.x ?? 0}
-                        y={bubblePositions[group.id]?.y ?? 0}
-                        size={group.size}
-                        color={container.color}
-                      />
-                    ))}
-                </AnimatePresence>
-              </div>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {[...bubbleGroups, ...ungroupedUsers].map((item) => {
+                const position = bubblePositions[item.id];
+                const severity = ('severity' in item ? item.severity : 3) as 1 | 2 | 3 | 4 | 5;
+                const container = severityContainers[severity];
+                return position && (
+                  <Bubble
+                    key={item.id}
+                    id={item.id}
+                    x={position.x}
+                    y={position.y}
+                    size={'size' in item ? item.size : 'sm'}
+                    color={container.color}
+                  />
+                );
+              })}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -587,13 +587,13 @@ const Header: React.FC<{
 
 
   // Bottom Section Component
-  const BottomSection: React.FC<BottomSectionProps> = ({ 
-    totalScans, 
-    cohortHealth, 
-    cohortStressLevel, 
-    lastUpdated 
-  }) => {
-    // Format the date to be human readable
+  const BottomSection: React.FC<{
+    totalScans: number;
+    cohortHealth: number;
+    cohortStressLevel: string;
+    lastUpdated: string;
+    isLoading: boolean;
+  }> = ({ totalScans, cohortHealth, cohortStressLevel, lastUpdated, isLoading }) => {
     const formatDate = (dateString: string) => {
       const date = new Date(dateString);
       return date.toLocaleTimeString('en-US', { 
@@ -603,31 +603,10 @@ const Header: React.FC<{
       });
     };
   
-    // Get the formatted time
-    const lastUpdatedText = lastUpdated 
-      ? `last updated - ${formatDate(lastUpdated)}`
-      : 'updating...';
-  
     return (
       <div className="absolute bottom-0 left-0 right-0 px-8 pb-6">
         <div className="flex justify-between items-end">
-          {/* QR Code section */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-4">
-              <img src="/qr.svg" alt="QR Code" className="w-36 h-36" />
-              <div>
-                <h3 className="text-xl font-medium text-black">Want to see your impact?</h3>
-                <p className="text-gray-600">
-                  Scan on our app and watch your data update live!
-                </p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mt-4">
-              *This shows the average data of people scanning with Philips HeartPrint app.
-            </p>
-          </div>
-  
-          {/* Stats and update time */}
+          <QRSection />
           <div className="flex flex-col items-end">
             <StatsCard 
               totalScans={totalScans}
@@ -635,7 +614,7 @@ const Header: React.FC<{
               cohortStressLevel={cohortStressLevel}
             />
             <p className="text-sm text-gray-500 mt-2">
-              {lastUpdatedText}
+              {isLoading ? 'updating...' : `last updated - ${formatDate(lastUpdated)}`}
             </p>
           </div>
         </div>
@@ -654,132 +633,124 @@ interface BubblePosition {
 }
 
 // Main Dashboard Content Component
-const InsurtechDashboardContent: React.FC = () => {
-  // State management
-  const [bubblePositions, setBubblePositions] = useState<Record<string, BubblePosition>>({});
-  const [initialRender, setInitialRender] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Use your existing data fetching hook
-  const { 
-    data: insurtechData, 
-    isLoading, 
-    error, 
-    dataUpdatedAt,
-    isFetching,
-  } = useInsurtechData();
+  const InsurtechDashboardContent: React.FC = () => {
+    const [bubblePositions, setBubblePositions] = useState<Record<string, BubblePosition>>({});
+    const positionsRef = useRef<Record<string, BubblePosition>>({});
+    const initializedRef = useRef(false);
+  
+    const { 
+      data: insurtechData = {
+        bubbleGroups: [],
+        ungroupedUsers: [],
+        totalScans: 0,
+        heartEnergyLevel: 0,
+        claimRiskStatus: 'Low',
+        cohortHealth: 0,
+        cohortStressLevel: 'Normal'
+      }, 
+      isLoading, 
+      dataUpdatedAt 
+    } = useInsurtechData();
+  
+  // Generate random position within section
+  const generateRandomPosition = (xMin: number, xMax: number) => {
+    const x = xMin + Math.random() * (xMax - xMin);
+    const ySpread = 35;
+    const yOffset = (Math.random() - 0.5) * ySpread;
+    return {
+      x,
+      y: 50 + yOffset
+    };
+  };
 
-  // Initialize and update bubble positions
+  // Initialize positions only once
   useEffect(() => {
-    if (initialRender && insurtechData) {
+    if (!initializedRef.current && insurtechData) {
       const newPositions: Record<string, BubblePosition> = {};
-      const containerWidth = containerRef.current?.clientWidth ?? 1000;
-      const containerHeight = containerRef.current?.clientHeight ?? 500;
-  
-      // Helper function to get random position within severity range
-      const getRandomPosition = (severity: number) => {
-        const container = severityContainers[severity as keyof typeof severityContainers];
-        const xRange = container.xRange;
-        const x = xRange[0] + (Math.random() * (xRange[1] - xRange[0]));
-        const y = 20 + (Math.random() * 60); // Keep bubbles in middle 60% of height
-  
-        return { x, y };
-      };
-  
-      // Position bubble groups
-      insurtechData.bubbleGroups.forEach(group => {
-        const position = getRandomPosition(group.severity);
-        newPositions[group.id] = {
-          id: group.id,
-          ...position
-        };
+      
+      const totalDesiredBubbles = 250;
+      const activeCount = insurtechData.bubbleGroups.length + insurtechData.ungroupedUsers.length;
+      const backgroundCount = Math.max(0, totalDesiredBubbles - activeCount);
+      
+      for (let i = 0; i < backgroundCount; i++) {
+        const rand = Math.random();
+        let severity: 1 | 2 | 3 | 4 | 5;
+        if (rand < 0.3) severity = 1;
+        else if (rand < 0.55) severity = 2;
+        else if (rand < 0.75) severity = 3;
+        else if (rand < 0.9) severity = 4;
+        else severity = 5;
+
+        const container = severityContainers[severity];
+        const position = generateRandomPosition(container.xRange[0], container.xRange[1]);
+        const id = `background-${i}`;
+        newPositions[id] = { id, ...position };
+      }
+
+      // Position active bubbles
+      [...insurtechData.bubbleGroups, ...insurtechData.ungroupedUsers].forEach(item => {
+        const severity = ('severity' in item ? item.severity : 3) as 1 | 2 | 3 | 4 | 5;
+        const container = severityContainers[severity];
+        const position = generateRandomPosition(container.xRange[0], container.xRange[1]);
+        newPositions[item.id] = { id: item.id, ...position };
       });
-  
-      // Position ungrouped users
-      insurtechData.ungroupedUsers.forEach(user => {
-        const position = getRandomPosition(user.severity);
-        newPositions[user.id] = {
-          id: user.id,
-          ...position
-        };
-      });
-  
+
+      positionsRef.current = newPositions;
       setBubblePositions(newPositions);
-      setInitialRender(false);
+      initializedRef.current = true;
     }
-  }, [insurtechData, initialRender]);
+  }, [insurtechData]);
 
-  // Loading state
-  if (isLoading && !insurtechData) {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <div className="text-4xl animate-spin text-philips-blue">⟳</div>
-      </div>
-    );
-  }
+  // Handle updates while maintaining existing positions
+  useEffect(() => {
+    if (insurtechData && initializedRef.current) {
+      const currentPositions = { ...positionsRef.current };
+      
+      [...insurtechData.bubbleGroups, ...insurtechData.ungroupedUsers].forEach(item => {
+        if (!currentPositions[item.id]) {
+          const severity = ('severity' in item ? item.severity : 3) as 1 | 2 | 3 | 4 | 5;
+          const container = severityContainers[severity];
+          const position = generateRandomPosition(container.xRange[0], container.xRange[1]);
+          currentPositions[item.id] = { id: item.id, ...position };
+        }
+      });
 
-  // Error state
-  if (error && !insurtechData) {
+      positionsRef.current = currentPositions;
+      setBubblePositions(currentPositions);
+    }
+  }, [insurtechData]);
+  
     return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <div className={`${TYPOGRAPHY.subtitle} text-danger-red`}>
-          {error instanceof Error ? error.message : 'Failed to load data'}
+      <div className="relative w-full h-full flex flex-col">
+        <div className="h-[15%] min-h-[100px]">
+          <Header 
+            heartEnergyLevel={insurtechData.heartEnergyLevel}
+            claimRiskStatus={insurtechData.claimRiskStatus}
+          />
+        </div>
+        
+        <div className="flex-1 h-[70%]">
+          <VisualizationArea 
+            bubbleGroups={insurtechData.bubbleGroups}
+            ungroupedUsers={insurtechData.ungroupedUsers}
+            bubblePositions={bubblePositions}
+            totalDesiredBubbles={250}
+          />
+        </div>
+        
+        <div className="h-[15%] min-h-[100px]">
+          <BottomSection 
+            totalScans={insurtechData.totalScans}
+            cohortHealth={insurtechData.cohortHealth}
+            cohortStressLevel={insurtechData.cohortStressLevel}
+            lastUpdated={new Date(dataUpdatedAt).toISOString()}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     );
-  }
-
-  // No data state
-  if (!insurtechData) {
-    return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <div className={TYPOGRAPHY.subtitle}>No data available</div>
-      </div>
-    );
-  }
-
-  const { 
-    bubbleGroups, 
-    ungroupedUsers, 
-    totalScans, 
-    heartEnergyLevel, 
-    claimRiskStatus,
-    cohortHealth,
-    cohortStressLevel,
-    lastUpdated,
-  } = insurtechData;
-
-  return (
-    <div className="relative w-full h-full flex flex-col justify-between">
-      {/* Header Section with minimum height */}
-      <div className="min-h-[20vh]">
-        <Header 
-          heartEnergyLevel={heartEnergyLevel}
-          claimRiskStatus={claimRiskStatus}
-        />
-      </div>
-
-      {/* Visualization Area takes remaining space */}
-      <div className="flex-1 min-h-[50vh] flex items-center justify-center">
-        <VisualizationArea 
-          bubbleGroups={bubbleGroups}
-          ungroupedUsers={ungroupedUsers}
-          bubblePositions={bubblePositions}
-        />
-      </div>
-
-      {/* Bottom Section with fixed height */}
-      <div className="min-h-[30vh]">
-        <BottomSection 
-          totalScans={totalScans}
-          cohortHealth={cohortHealth}
-          cohortStressLevel={cohortStressLevel}
-          lastUpdated={new Date(dataUpdatedAt).toISOString()}
-        />
-      </div>
-    </div>
-  );
-};
+  };
 
 // Custom hook for window dimensions (unchanged)
 const useWindowDimensions = () => {
