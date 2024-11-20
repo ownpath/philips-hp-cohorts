@@ -415,7 +415,7 @@ const Header: React.FC<{
     heartEnergyLevel: number;
     claimRiskStatus: string;
   }> = ({ heartEnergyLevel, claimRiskStatus }) => {
-    console.log("claim risk status", claimRiskStatus)
+   
     return (
       <div className="w-full flex flex-col lg:flex-row items-start p-4 sm:p-6 lg:p-8">
         {/* Logo aligned at top left */}
@@ -669,7 +669,7 @@ interface BubblePosition {
     if (!initializedRef.current && insurtechData) {
       const newPositions: Record<string, BubblePosition> = {};
       
-      const totalDesiredBubbles = 250;
+      const totalDesiredBubbles = 110;
       const activeCount = insurtechData.bubbleGroups.length + insurtechData.ungroupedUsers.length;
       const backgroundCount = Math.max(0, totalDesiredBubbles - activeCount);
       
@@ -735,7 +735,7 @@ interface BubblePosition {
             bubbleGroups={insurtechData.bubbleGroups}
             ungroupedUsers={insurtechData.ungroupedUsers}
             bubblePositions={bubblePositions}
-            totalDesiredBubbles={250}
+            totalDesiredBubbles={110}
           />
         </div>
         
