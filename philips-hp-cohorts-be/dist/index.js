@@ -25,8 +25,8 @@ const insurtechRoutes_1 = require("./routes/insurtechRoutes");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 8001;
-const isEC2 = fs_1.default.existsSync('/etc/ssl/private/selfsigned.key') &&
-    fs_1.default.existsSync('/etc/ssl/certs/selfsigned.crt');
+const isEC2 = fs_1.default.existsSync('/etc/letsencrypt/live/events.heartcheck.app/privkey.pem') &&
+    fs_1.default.existsSync('/etc/letsencrypt/live/events.heartcheck.app/fullchain.pem');
 const corsOptions = {
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -113,22 +113,21 @@ app.delete('/file/:key(*)', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.status(500).json({ error: error.message });
     }
 }));
-// Remove any existing server creation code and use this single server creation:
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     if (isEC2) {
         try {
             const httpsOptions = {
-                key: fs_1.default.readFileSync('/etc/ssl/private/selfsigned.key'),
-                cert: fs_1.default.readFileSync('/etc/ssl/certs/selfsigned.crt')
+                key: fs_1.default.readFileSync('/etc/letsencrypt/live/events.heartcheck.app/privkey.pem'),
+                cert: fs_1.default.readFileSync('/etc/letsencrypt/live/events.heartcheck.app/fullchain.pem')
             };
-            // Create HTTPS server
+            // Create HTTPS server on port 443
             const httpsServer = https_1.default.createServer(httpsOptions, app);
             httpsServer.listen(443, () => {
-                console.log('🔐 HTTPS Server running on port 443');
+                console.log('🔐 HTTPS Server running on https://events.heartcheck.app');
             });
-            // HTTP redirect server
+            // HTTP redirect server on port 80
             const httpServer = http_1.default.createServer((req, res) => {
-                const host = req.headers.host || '3.110.101.92';
+                const host = req.headers.host || 'events.heartcheck.app';
                 res.writeHead(301, { Location: `https://${host}${req.url}` });
                 res.end();
             });
@@ -146,17 +145,9 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const startHttpServer = () => {
+    const port = process.env.PORT || 8000;
     app.listen(port, () => {
         console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-    }).on('error', (error) => {
-        if (error.code === 'EADDRINUSE') {
-            console.error(`Port ${port} is in use. Please use a different port.`);
-            process.exit(1);
-        }
-        else {
-            console.error('Server error:', error);
-            process.exit(1);
-        }
     });
 };
 startServer();

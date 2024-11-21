@@ -18,8 +18,8 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 8001;
 
-const isEC2 = fs.existsSync('/etc/ssl/private/selfsigned.key') && 
-              fs.existsSync('/etc/ssl/certs/selfsigned.crt');
+const isEC2 = fs.existsSync('/etc/letsencrypt/live/events.heartcheck.app/privkey.pem') && 
+              fs.existsSync('/etc/letsencrypt/live/events.heartcheck.app/fullchain.pem');
 
 const corsOptions = {
   origin: "*",
@@ -121,24 +121,23 @@ app.delete('/file/:key(*)', async (req: Request, res: Response) => {
 
 
 
-// Remove any existing server creation code and use this single server creation:
 const startServer = async () => {
   if (isEC2) {
     try {
       const httpsOptions = {
-        key: fs.readFileSync('/etc/ssl/private/selfsigned.key'),
-        cert: fs.readFileSync('/etc/ssl/certs/selfsigned.crt')
+        key: fs.readFileSync('/etc/letsencrypt/live/events.heartcheck.app/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/events.heartcheck.app/fullchain.pem')
       };
 
-      // Create HTTPS server
+      // Create HTTPS server on port 443
       const httpsServer = https.createServer(httpsOptions, app);
       httpsServer.listen(443, () => {
-        console.log('🔐 HTTPS Server running on port 443');
+        console.log('🔐 HTTPS Server running on https://events.heartcheck.app');
       });
 
-      // HTTP redirect server
+      // HTTP redirect server on port 80
       const httpServer = http.createServer((req, res) => {
-        const host = req.headers.host || '3.110.101.92';
+        const host = req.headers.host || 'events.heartcheck.app';
         res.writeHead(301, { Location: `https://${host}${req.url}` });
         res.end();
       });
@@ -155,16 +154,9 @@ const startServer = async () => {
 };
 
 const startHttpServer = () => {
+  const port = process.env.PORT || 8000;
   app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-  }).on('error', (error: any) => {
-    if (error.code === 'EADDRINUSE') {
-      console.error(`Port ${port} is in use. Please use a different port.`);
-      process.exit(1);
-    } else {
-      console.error('Server error:', error);
-      process.exit(1);
-    }
   });
 };
 

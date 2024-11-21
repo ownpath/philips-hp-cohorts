@@ -43,7 +43,7 @@
     font-display: swap;
 }
 
-/* Your existing root variables */
+/* Root variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -56,8 +56,52 @@
   }
 }
 
+/* Base styles */
+html,
 body {
+  overscroll-behavior: none;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
   color: var(--foreground);
   background: var(--background);
   font-family: 'Neue Frutiger World', Arial, Helvetica, sans-serif;
+}
+
+/* Responsive font scaling for landscape */
+@media (orientation: landscape) and (max-height: 500px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+/* Ensure smooth animations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
 }

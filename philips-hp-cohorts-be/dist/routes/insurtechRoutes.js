@@ -97,7 +97,24 @@ const statsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
 });
+const userGradesHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const stats = yield InsurtechService_1.InsurtechService.getUserGrades(INSTANCE_ID);
+        res.json({
+            success: true,
+            data: stats
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get user grades',
+            message: error.message
+        });
+    }
+});
 // Route definitions
 router.get('/poll', pollHandler);
 router.get('/stats', statsHandler);
+router.get('/users/grades', userGradesHandler);
 exports.InsurtechRouter = router;

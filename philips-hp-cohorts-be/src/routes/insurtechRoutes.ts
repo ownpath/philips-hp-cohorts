@@ -99,8 +99,26 @@ const statsHandler: RequestHandler = async (req, res) => {
     }
 };
 
+const userGradesHandler: RequestHandler = async (req, res) => {
+    try {
+        const stats = await InsurtechService.getUserGrades(INSTANCE_ID);
+        res.json({
+            success: true,
+            data: stats
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to get user grades',
+            message: error.message
+        });
+    }
+};
+
 // Route definitions
 router.get('/poll', pollHandler);
 router.get('/stats', statsHandler);
+router.get('/users/grades', userGradesHandler);
+
 
 export const InsurtechRouter = router;

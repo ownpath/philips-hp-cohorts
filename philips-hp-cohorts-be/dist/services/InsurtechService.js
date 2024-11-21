@@ -187,21 +187,84 @@ class InsurtechService {
             }
         });
     }
+    static getUserGrades(instanceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const pipeline = [
+                    {
+                        $match: {
+                            welphiInstanceId: instanceId
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            userId: 1,
+                            grade: 1,
+                            timestamp: 1,
+                            value: 1
+                        }
+                    },
+                    {
+                        $sort: {
+                            timestamp: -1
+                        }
+                    }
+                ];
+                const userGrades = yield InsurtechData_1.InsurtechData.aggregate(pipeline);
+                return userGrades.map(user => ({
+                    id: user.userId,
+                    grade: user.grade,
+                    timestamp: user.timestamp,
+                    value: user.value
+                }));
+            }
+            catch (error) {
+                console.error('Error getting user grades:', error);
+                throw error;
+            }
+        });
+    }
+    // private static getClaimRiskStatus(averageGrade: number): string {
+    //     if (averageGrade <= 2) return 'Low';
+    //     if (averageGrade <= 3) return 'Medium';
+    //     return 'High';
+    // }
+    // private static getCohortStressLevel(averageValue: number): string {
+    //     if (averageValue < 60) return 'High';
+    //     if (averageValue <= 75) return 'Medium';
+    //     return 'Low';
+    // }
+    // static getGradeDescription(grade: number): string {
+    //     switch (grade) {
+    //         case 1: return 'Dark Orange';
+    //         case 2: return 'Dark Amber';
+    //         case 3: return 'Amber';
+    //         case 4: return 'Light green';
+    //         case 5: return 'Dark green';
+    //         default: return 'Unknown';
+    //     }
+    // }
     static getClaimRiskStatus(averageGrade) {
-        if (averageGrade <= 2)
-            return 'Low';
-        if (averageGrade <= 3)
-            return 'Medium';
-        return 'High';
+        // Since higher grades (4-5) indicate better health (Light/Dark green),
+        // the risk should be inversely proportional
+        if (averageGrade >= 4)
+            return 'Low'; // Light/Dark green
+        if (averageGrade >= 3)
+            return 'Medium'; // Amber
+        return 'High'; // Dark Orange/Dark Amber
     }
     static getCohortStressLevel(averageValue) {
-        if (averageValue < 60)
-            return 'High';
-        if (averageValue <= 75)
-            return 'Normal';
-        return 'Low';
+        // Since higher HEP values (0-100) indicate better heart health,
+        // stress should be inversely proportional
+        if (averageValue >= 75)
+            return 'Low'; // Good heart health
+        if (averageValue >= 60)
+            return 'Medium'; // Moderate heart health
+        return 'High'; // Poor heart health
     }
     static getGradeDescription(grade) {
+        // This method is already correct according to the data definition
         switch (grade) {
             case 1: return 'Dark Orange';
             case 2: return 'Dark Amber';

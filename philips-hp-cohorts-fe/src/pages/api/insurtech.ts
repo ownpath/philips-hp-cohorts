@@ -40,7 +40,14 @@ interface PollResponse {
   message?: string;
 }
 
-const POLLING_INTERVAL = 180000; // 3 minutes in milliseconds
+export interface UserGrade {
+  id: string;
+  grade: number;
+  timestamp: string;
+  value: number;
+}
+
+const POLLING_INTERVAL = 5000; // 3 minutes in milliseconds
 
 // Create a more visible logging utility
 const createVisibleLog = (type: 'info' | 'warn' | 'error') => (message: string, data?: any) => {
@@ -157,6 +164,21 @@ export const useInsurtechData = () => {
   }, [queryResult.isFetching, queryResult.dataUpdatedAt]);
 
   return queryResult;
+};
+
+export const fetchUsersGrades = async (): Promise<UserGrade[]> => {
+  const { data: response } = await api.get<{ success: boolean; data: UserGrade[] }>('/insurtech/users/grades');
+  if (!response.success) throw new Error('Failed to fetch user grades');
+  return response.data;
+};
+
+export const useUsersGrades = () => {
+  return useQuery({
+    queryKey: ['users-grades'],
+    queryFn: fetchUsersGrades,
+    refetchInterval: POLLING_INTERVAL,
+    staleTime: POLLING_INTERVAL,
+  });
 };
 
 // Export configuration

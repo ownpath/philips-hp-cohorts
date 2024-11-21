@@ -8,76 +8,152 @@ export default {
   ],
   theme: {
     screens: {
-      'xs': '375px',     // iPhone SE
-      'sm': '640px',     // Small tablets
-      'md': '768px',     // Tablets
-      'lg': '1024px',    // Small laptops
-      'xl': '1280px',    // Laptops
+      // Mobile landscape breakpoints
+      'ls': '667px',    // iPhone SE landscape
+      'lm': '740px',    // iPhone Pro landscape
+      'll': '844px',    // iPhone Pro Max landscape
+      
+      // Traditional breakpoints
+      'sm': '640px',    
+      'md': '768px',    
+      'lg': '1024px',   // Small laptops
+      'xl': '1280px',   // Larger laptops
+      
+      // TV breakpoints
       'tv-sm': '1280px', // 720p
       'tv-md': '1920px', // 1080p
       'tv-lg': '2560px', // 1440p
       'tv-xl': '3840px', // 4K
+      
+      // Orientation queries
+      'landscape': { 'raw': '(orientation: landscape)' },
+      'portrait': { 'raw': '(orientation: portrait)' },
     },
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
         'philips-blue': '#123772',
         'success-green': '#4ade80',
         'warning-yellow': '#fcd34d',
-        'danger-red': '#ef4444',
+        'danger-red': '#E43404',
         'neutral-gray': '#6b7280',
       },
-      fontFamily: {
-        'neue-frutiger': ['Neue Frutiger World', 'Arial', 'Helvetica', 'sans-serif'],
-      },
       spacing: {
-        // Component specific spacing
-        'logo': '82px',
-        'score-card-w': '240px',
-        'score-card-h': '128px',
-        'stats-card-w': '551px',
-        'stats-card-h': '169px',
-        'bubble-container-w': '197px',
-        'bubble-container-h': '250.73px',
+        // Logo sizes
+        'logo-base': '45px',
+        'logo-ls': '50px',
+        'logo-ll': '55px',
+        'logo-lg': '62px',
+        
+        // Card dimensions for AverageScoreCard
+        'card-w-base': '180px',
+        'card-w-ls': '200px',
+        'card-w-ll': '220px',
+        'card-w-lg': '240px',
+        
+        'card-h-base': '96px',
+        'card-h-ls': '106px',
+        'card-h-ll': '116px',
+        'card-h-lg': '128px',
+        
+        // Stats Card dimensions
+        'stats-w-base': '300px',
+        'stats-w-ls': '340px',
+        'stats-w-ll': '380px',
+        'stats-w-lg': '551px',
+        
+        'stats-h-base': '120px',
+        'stats-h-ls': '140px',
+        'stats-h-ll': '160px',
+        'stats-h-lg': '169px',
+        
+        // Bubble dimensions
+        'bubble-base': '16px',
+        'bubble-ls': '20px',
+        'bubble-ll': '24px',
+        'bubble-lg': '32px',
+        
+        // QR Code dimensions
+        'qr-w-base': '80px',
+        'qr-w-ls': '100px',
+        'qr-w-ll': '120px',
+        'qr-w-lg': '134.6px',
+        
+        'qr-h-base': '64px',
+        'qr-h-ls': '80px',
+        'qr-h-ll': '96px',
+        'qr-h-lg': '108.14px',
       },
       fontSize: {
-        // Mobile-first typography scale
-        'xs': ['12px', '1.2'],
-        'sm': ['14px', '1.3'],
-        'base': ['16px', '1.4'],
-        'lg': ['18px', '1.4'],
-        'xl': ['20px', '1.4'],
-        '2xl': ['24px', '1.3'],
-        '3xl': ['30px', '1.2'],
-        '4xl': ['36px', '1.1'],
-        // Responsive typography scale
-        'heading': ['52px', '1.1'],
-        'subtitle': ['20px', '1.5'],
-        'label': ['17px', '1.4'],
-        'display': ['32px', '1.2'],
-      },
-      borderRadius: {
-        'card': '15px',
+        // Base typography
+        'xs': ['0.75rem', '1rem'],     // 12px
+        'sm': ['0.875rem', '1.25rem'], // 14px
+        'base': ['1rem', '1.5rem'],    // 16px
+        'lg': ['1.125rem', '1.75rem'], // 18px
+        'xl': ['1.25rem', '1.75rem'],  // 20px
+        '2xl': ['1.5rem', '2rem'],     // 24px
+        
+        // Heading sizes
+        'heading-base': ['24px', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'heading-ls': ['28px', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'heading-ll': ['32px', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'heading-lg': ['52px', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        
+        // Subtitle sizes
+        'subtitle-base': ['14px', { lineHeight: '1.5' }],
+        'subtitle-ls': ['16px', { lineHeight: '1.5' }],
+        'subtitle-ll': ['18px', { lineHeight: '1.5' }],
+        'subtitle-lg': ['20px', { lineHeight: '1.5' }],
+        
+        // Card title sizes
+        'card-title-base': ['12px', { lineHeight: '1.4', fontWeight: '500' }],
+        'card-title-ls': ['14px', { lineHeight: '1.4', fontWeight: '500' }],
+        'card-title-ll': ['16px', { lineHeight: '1.4', fontWeight: '500' }],
+        'card-title-lg': ['17px', { lineHeight: '1.4', fontWeight: '500' }],
+        
+        // Stats sizes
+        'stats-base': ['16px', { lineHeight: '1.2', fontWeight: '700' }],
+        'stats-ls': ['18px', { lineHeight: '1.2', fontWeight: '700' }],
+        'stats-ll': ['20px', { lineHeight: '1.2', fontWeight: '700' }],
+        'stats-lg': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
       },
       maxWidth: {
-        'dashboard': '1920px',
+        // Dashboard max widths
+        'dashboard-base': '667px',
+        'dashboard-ls': '740px',
+        'dashboard-ll': '844px',
+        'dashboard-lg': '1280px',
       },
       maxHeight: {
-        'dashboard': '1080px',
+        // Dashboard max heights
+        'dashboard-base': '375px',
+        'dashboard-ls': '390px',
+        'dashboard-ll': '430px',
+        'dashboard-lg': '720px',
       },
-      aspectRatio: {
-        'tv': '16/9',
+      borderRadius: {
+        // Card radius
+        'card-base': '8px',
+        'card-ls': '12px',
+        'card-ll': '14px',
+        'card-lg': '16px',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
+          '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
-        }
-      }
+        },
+      },
+      padding: {
+        // Card padding
+        'card-base': '8px',
+        'card-ls': '12px',
+        'card-ll': '14px',
+        'card-lg': '16px',
+      },
     },
   },
   plugins: [],
