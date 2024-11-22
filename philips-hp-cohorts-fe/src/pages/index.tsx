@@ -97,8 +97,38 @@ const TYPOGRAPHY = {
   display: 'text-lg landscape:text-xl tv-sm:text-display tv-md:text-4xl tv-lg:text-5xl tv-xl:text-6xl font-bold'
 };
 
-// Landscape enforcer component with responsive handling
+
+
+
+
+
+
+// Updated DashboardLayout component with mobile scroll support
+const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="min-h-screen w-screen bg-white overflow-y-auto overflow-x-hidden landscape:overflow-auto">
+      <div className="min-h-screen w-full flex items-center justify-center p-1 landscape:p-2 sm:p-2 md:p-4">
+        <div 
+          className="relative bg-white rounded-xl shadow-lg w-full h-full 
+                     max-w-dashboard min-h-[calc(100vh-1rem)] landscape:min-h-[calc(100vh-2rem)]
+                     overflow-hidden"
+          style={{ 
+            aspectRatio: '16/9',
+            maxHeight: 'calc(100vh - 2rem)'
+          }}
+        >
+          <div className="w-full h-full flex flex-col">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Updated LandscapeEnforcer with scroll support
 const LandscapeEnforcer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
   return (
     <>
       <div className="lg:hidden h-screen w-screen flex items-center justify-center 
@@ -117,25 +147,8 @@ const LandscapeEnforcer: React.FC<{ children: React.ReactNode }> = ({ children }
   );
 };
 
-// Main container layout component
-const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <div className="fixed inset-0 w-screen h-screen bg-white overflow-hidden">
-      <div className="w-full h-full flex items-center justify-center p-1 landscape:p-2 sm:p-2 md:p-4">
-        <div 
-          className="relative bg-white rounded-xl shadow-lg w-full h-full 
-                     max-w-dashboard max-h-dashboard overflow-hidden
-                     landscape:max-h-[100vh]"
-          style={{ aspectRatio: '16/9' }}
-        >
-          <div className="w-full h-full flex flex-col overflow-auto">
-            {children}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+
+
 
 
 // Average Score Card Component
