@@ -31,7 +31,7 @@ const pollHandler: RequestHandler = async (req, res) => {
             throw new Error('No stats available for instance');
         }
 
-        console.log('Current stats:', JSON.stringify(currentStats, null, 2));
+       // console.log('Current stats:', JSON.stringify(currentStats, null, 2));
 
         // Always return current data
         const response = {
@@ -44,7 +44,7 @@ const pollHandler: RequestHandler = async (req, res) => {
             }
         };
 
-        console.log('Sending response:', JSON.stringify(response, null, 2));
+        //console.log('Sending response:', JSON.stringify(response, null, 2));
         res.json(response);
     } catch (error: any) {
         console.error('Polling error details:', {
@@ -82,7 +82,7 @@ const statsHandler: RequestHandler = async (req, res) => {
             success: true,
             data: stats
         };
-        console.log('Sending response:', JSON.stringify(response, null, 2));
+        //console.log('Sending response:', JSON.stringify(response, null, 2));
         res.json(response);
     } catch (error: any) {
         console.error('Stats error details:', {
@@ -106,6 +106,7 @@ const userGradesHandler: RequestHandler = async (req, res) => {
             success: true,
             data: stats
         });
+        console.log("hitting usccessfully")
     } catch (error: any) {
         res.status(500).json({
             success: false,

@@ -206,7 +206,10 @@ const StatsCard: React.FC<{
       user: index + 1,
       grade: user.grade
     }));
+  
   }, [userGrades]);
+
+  // console.log('chart data', chartData)
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-3 ls:p-4 lg:p-6

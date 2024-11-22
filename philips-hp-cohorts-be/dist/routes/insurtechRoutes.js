@@ -34,7 +34,7 @@ const pollHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             console.error('No stats available for instance');
             throw new Error('No stats available for instance');
         }
-        console.log('Current stats:', JSON.stringify(currentStats, null, 2));
+        // console.log('Current stats:', JSON.stringify(currentStats, null, 2));
         // Always return current data
         const response = {
             success: true,
@@ -45,7 +45,7 @@ const pollHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 hasNewData: syncResult.hasNewData
             }
         };
-        console.log('Sending response:', JSON.stringify(response, null, 2));
+        //console.log('Sending response:', JSON.stringify(response, null, 2));
         res.json(response);
     }
     catch (error) {
@@ -80,7 +80,7 @@ const statsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             success: true,
             data: stats
         };
-        console.log('Sending response:', JSON.stringify(response, null, 2));
+        //console.log('Sending response:', JSON.stringify(response, null, 2));
         res.json(response);
     }
     catch (error) {
@@ -104,6 +104,7 @@ const userGradesHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
             success: true,
             data: stats
         });
+        console.log("hitting usccessfully");
     }
     catch (error) {
         res.status(500).json({

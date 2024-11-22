@@ -47,7 +47,7 @@ export interface UserGrade {
   value: number;
 }
 
-const POLLING_INTERVAL = 5000; // 3 minutes in milliseconds
+const POLLING_INTERVAL = 180000; // 3 minutes in milliseconds
 
 // Create a more visible logging utility
 const createVisibleLog = (type: 'info' | 'warn' | 'error') => (message: string, data?: any) => {
@@ -169,6 +169,7 @@ export const useInsurtechData = () => {
 export const fetchUsersGrades = async (): Promise<UserGrade[]> => {
   const { data: response } = await api.get<{ success: boolean; data: UserGrade[] }>('/insurtech/users/grades');
   if (!response.success) throw new Error('Failed to fetch user grades');
+  console.log ("response data", response.data)
   return response.data;
 };
 
@@ -180,6 +181,8 @@ export const useUsersGrades = () => {
     staleTime: POLLING_INTERVAL,
   });
 };
+
+
 
 // Export configuration
 export const INSURTECH_CONFIG = {

@@ -54,7 +54,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use("/InsurTech", InsurtechRouter);
+app.use("/insurtech", InsurtechRouter);
 
 
 // Test S3 connection

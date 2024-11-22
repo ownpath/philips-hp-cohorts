@@ -51,7 +51,7 @@ app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
-app.use("/InsurTech", insurtechRoutes_1.InsurtechRouter);
+app.use("/insurtech", insurtechRoutes_1.InsurtechRouter);
 // Test S3 connection
 app.get('/test-s3', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

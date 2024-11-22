@@ -64,7 +64,7 @@ export class InsurtechService {
             const batchData = await Promise.all(promises);
 
             batchData.forEach((data: S3InsurtechData) => {
-                console.log('Processing file data:', data);
+              //  console.log('Processing file data:', data);
                 const existingData = userDataMap.get(data.userId);
                 if (!existingData || new Date(data.timestamp) > new Date(existingData.timestamp)) {
                     userDataMap.set(data.userId, data);
@@ -277,24 +277,53 @@ static async getUserGrades(instanceId: string) {
     //     }
     // }
 
+    // private static getClaimRiskStatus(averageGrade: number): string {
+    //     // Since higher grades (4-5) indicate better health (Light/Dark green),
+    //     // the risk should be inversely proportional
+    //     if (averageGrade >= 4) return 'Low';      // Light/Dark green
+    //     if (averageGrade >= 3) return 'Medium';   // Amber
+    //     return 'High';                            // Dark Orange/Dark Amber
+    // }
+
+    // private static getCohortStressLevel(averageValue: number): string {
+    //     // Since higher HEP values (0-100) indicate better heart health,
+    //     // stress should be inversely proportional
+    //     if (averageValue >= 75) return 'Low';     // Good heart health
+    //     if (averageValue >= 60) return 'Medium';  // Moderate heart health
+    //     return 'High';                            // Poor heart health
+    // }
+
+    // static getGradeDescription(grade: number): string {
+    //     // This method is already correct according to the data definition
+    //     switch (grade) {
+    //         case 1: return 'Dark Orange';
+    //         case 2: return 'Dark Amber';
+    //         case 3: return 'Amber';
+    //         case 4: return 'Light green';
+    //         case 5: return 'Dark green';
+    //         default: return 'Unknown';
+    //     }
+    // }
+
     private static getClaimRiskStatus(averageGrade: number): string {
-        // Since higher grades (4-5) indicate better health (Light/Dark green),
-        // the risk should be inversely proportional
         if (averageGrade >= 4) return 'Low';      // Light/Dark green
         if (averageGrade >= 3) return 'Medium';   // Amber
         return 'High';                            // Dark Orange/Dark Amber
     }
 
-    private static getCohortStressLevel(averageValue: number): string {
-        // Since higher HEP values (0-100) indicate better heart health,
-        // stress should be inversely proportional
-        if (averageValue >= 75) return 'Low';     // Good heart health
-        if (averageValue >= 60) return 'Medium';  // Moderate heart health
-        return 'High';                            // Poor heart health
+    private static getCohortStressLevel(grade: number): string {
+        // Updated mapping according to the new requirements
+        switch (Math.round(grade)) {
+            case 1: return 'Very High';
+            case 2: return 'High';
+            case 3: return 'Normal';
+            case 4: return 'Low';
+            case 5: return 'Very Low';
+            default: return 'Normal';  // Default fallback
+        }
     }
 
     static getGradeDescription(grade: number): string {
-        // This method is already correct according to the data definition
         switch (grade) {
             case 1: return 'Dark Orange';
             case 2: return 'Dark Amber';
