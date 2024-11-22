@@ -169,7 +169,7 @@ class InsurtechService {
                     heartEnergyLevel: result.stats[0].averageValue,
                     claimRiskStatus: this.getClaimRiskStatus(result.stats[0].averageGrade),
                     cohortHealth: result.stats[0].averageGrade,
-                    cohortStressLevel: this.getCohortStressLevel(result.stats[0].averageGrade),
+                    cohortStressLevel: this.getCohortStressLevel(result.stats[0].averageValue),
                     gradeDistribution,
                     lastUpdated: result.stats[0].latestTimestamp,
                     bubbleGroups: groups,
@@ -226,26 +226,6 @@ class InsurtechService {
         });
     }
     // private static getClaimRiskStatus(averageGrade: number): string {
-    //     if (averageGrade <= 2) return 'Low';
-    //     if (averageGrade <= 3) return 'Medium';
-    //     return 'High';
-    // }
-    // private static getCohortStressLevel(averageValue: number): string {
-    //     if (averageValue < 60) return 'High';
-    //     if (averageValue <= 75) return 'Medium';
-    //     return 'Low';
-    // }
-    // static getGradeDescription(grade: number): string {
-    //     switch (grade) {
-    //         case 1: return 'Dark Orange';
-    //         case 2: return 'Dark Amber';
-    //         case 3: return 'Amber';
-    //         case 4: return 'Light green';
-    //         case 5: return 'Dark green';
-    //         default: return 'Unknown';
-    //     }
-    // }
-    // private static getClaimRiskStatus(averageGrade: number): string {
     //     // Since higher grades (4-5) indicate better health (Light/Dark green),
     //     // the risk should be inversely proportional
     //     if (averageGrade >= 4) return 'Low';      // Light/Dark green
@@ -271,6 +251,8 @@ class InsurtechService {
     //     }
     // }
     static getClaimRiskStatus(averageGrade) {
+        // Since higher grades (4-5) indicate better health (Light/Dark green),
+        // the risk should be inversely proportional
         if (averageGrade >= 4)
             return 'Low'; // Light/Dark green
         if (averageGrade >= 3)
@@ -278,15 +260,19 @@ class InsurtechService {
         return 'High'; // Dark Orange/Dark Amber
     }
     static getCohortStressLevel(grade) {
-        // Updated mapping according to the new requirements
-        switch (Math.round(grade)) {
-            case 1: return 'Very High';
-            case 2: return 'High';
-            case 3: return 'Normal';
-            case 4: return 'Low';
-            case 5: return 'Very Low';
-            default: return 'Normal'; // Default fallback
-        }
+        // Round the grade to handle decimal values
+        const roundedGrade = Math.round(grade);
+        if (roundedGrade <= 1)
+            return 'Very High';
+        if (roundedGrade === 2)
+            return 'High';
+        if (roundedGrade === 3)
+            return 'Normal';
+        if (roundedGrade === 4)
+            return 'Low';
+        if (roundedGrade >= 5)
+            return 'Very Low';
+        return 'Normal'; // Default fallback
     }
     static getGradeDescription(grade) {
         switch (grade) {

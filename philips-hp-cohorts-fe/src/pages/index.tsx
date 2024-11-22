@@ -176,7 +176,7 @@ const AverageScoreCard: React.FC<{
             <div className="flex items-center justify-between">
               <span className="text-xs ls:text-sm lg:text-base tv-md:text-lg tv-lg:text-xl 
                              text-black font-normal">
-                Claim Risk Status
+                Risk Status
               </span>
               <span className="text-xs ls:text-sm lg:text-base tv-md:text-lg tv-lg:text-xl 
                              text-black font-medium  px-2 py-0.5 rounded-md">
@@ -214,8 +214,14 @@ const StatsCard: React.FC<{
   return (
     <div className="bg-white rounded-xl shadow-lg p-3 ls:p-4 lg:p-6
                     w-[300px] h-[140px] 
-                    ls:w-[340px] ls:h-[160px] 
-                    ll:w-[40vw] ll:h-[12vw] 
+                    ls:w-[340px] ls:h-[96px] 
+                    lm:w-[340px] lm:h-[96px]
+                    sm:w-[340px] sm:h-[96px] 
+                     md:w-[340px] md:h-[96px]
+                   
+
+
+                    ll:w-[240vw] ll:h-[48vw] 
                     lg:w-[40vw] lg:h-[169px]
                     ">
       <div className="flex flex-row h-full gap-3 ls:gap-4 lg:gap-6">
@@ -268,7 +274,7 @@ const StatsCard: React.FC<{
           <div className=" rounded-lg p-3 ls:p-4 lg:p-6 h-full">
             <div className="flex flex-col justify-between h-full">
               <div className="flex items-center justify-between">
-                <span className="text-sm ls:text-sm lg:text-lg font-medium text-black">
+                <span className="text-xs ls:text-xs ll:text-xs lm:text-xs sm:text-xs md:text-xs lg:text-lg font-medium text-black">
                   Cohort overall health
                 </span>
                 <div className="flex gap-0 mx-[10%]">
@@ -286,11 +292,11 @@ const StatsCard: React.FC<{
               </div>
               
               <div className="flex items-center justify-between w-full">
-                <span className="text-sm ls:text-sm lg:text-lg font-medium text-black">
+                <span className="text-xs ls:text-xs ll:text-xs lm:text-xs sm:text-xs md:text-xs lg:text-lg font-medium text-black">
                   Cohort stress level
                 </span>
-                <span className="bg-warning-yellow px-4 py-2 text-black rounded-full 
-                               text-xs ls:text-xs lg:text-sm">
+                <span className="bg-warning-yellow px-4 py-2 sm:px-2 sm:py-2 md:px-2 md:py-2  text-black rounded-full 
+                               text-xs ls:text-xs sm:text-xs md:text-xs lg:text-sm">
                   {cohortStressLevel}
                 </span>
               </div>
@@ -328,12 +334,12 @@ const Header: React.FC<{
                       font-black text-black text-center tracking-tight">
           How are we doing today?
         </h1>
-        {/* <p className="text-sm ls:text-base ll:text-lg lg:text-xl xl:text-2xl
+        <p className="text-sm ls:text-base ll:text-lg lg:text-xl xl:text-2xl
                      text-center text-gray-600 mt-1 lg:mt-2">
-          How close are we to claim risk,
+        How stressed is your heart
           <br className="" />
-          and how secure are you in staying away from it?
-        </p> */}
+          and how secure are you in staying away from stress?
+        </p>
       </div>
 
       {/* Score Card */}
@@ -786,14 +792,15 @@ const InsurtechDashboardContent: React.FC = () => {
       ungroupedUsers: [],
       totalScans: 0,
       heartEnergyLevel: 0,
-      claimRiskStatus: 'Low',
+      claimRiskStatus: '',
       cohortHealth: 0,
-      cohortStressLevel: 'Normal'
+      cohortStressLevel: ''
     }, 
     isLoading, 
     dataUpdatedAt 
   } = useInsurtechData();
 
+  console.log('data', insurtechData)
   // Generate random position within section
   const generateRandomPosition = (xMin: number, xMax: number) => {
     const x = xMin + Math.random() * (xMax - xMin);

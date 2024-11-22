@@ -56,15 +56,15 @@ export default {
         'card-h-lg': '128px',
         
         // Stats Card dimensions
-        'stats-w-base': '300px',
-        'stats-w-ls': '340px',
-        'stats-w-ll': '380px',
-        'stats-w-lg': '551px',
+        'stats-w-base': '180px',    // Mobile (default) - Even smaller
+        'stats-w-ls': '170px',      // Landscape SE
+        'stats-w-ll': '160px',      // Landscape Pro Max
+        'stats-w-lg': '150px',      // Desktop
         
-        'stats-h-base': '120px',
-        'stats-h-ls': '140px',
-        'stats-h-ll': '160px',
-        'stats-h-lg': '169px',
+        'stats-h-base': '80px',     // Mobile (default) - Much smaller height
+        'stats-h-ls': '75px',       // Landscape SE
+        'stats-h-ll': '70px',       // Landscape Pro Max
+        'stats-h-lg': '65px',       // Desktop     // Desktop
         
         // Bubble dimensions
         'bubble-base': '16px',
