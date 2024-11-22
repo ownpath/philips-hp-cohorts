@@ -196,7 +196,7 @@ export class InsurtechService {
                 heartEnergyLevel: result.stats[0].averageValue,
                 claimRiskStatus: this.getClaimRiskStatus(result.stats[0].averageGrade),
                 cohortHealth: result.stats[0].averageGrade,
-                cohortStressLevel: this.getCohortStressLevel(result.stats[0].averageValue),
+                cohortStressLevel: this.getCohortStressLevel(result.stats[0].averageGrade),
                 gradeDistribution,
                 lastUpdated: result.stats[0].latestTimestamp,
                 bubbleGroups: groups,
@@ -294,6 +294,10 @@ static async getUserGrades(instanceId: string) {
     }
 
     private static getCohortStressLevel(grade: number): string {
+        // Add debug logs
+        console.log('Grade before rounding:', grade);
+        console.log('Rounded grade:', Math.round(grade));
+        
         // Round the grade to handle decimal values
         const roundedGrade = Math.round(grade);
         

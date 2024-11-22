@@ -169,7 +169,7 @@ export const useInsurtechData = () => {
 export const fetchUsersGrades = async (): Promise<UserGrade[]> => {
   const { data: response } = await api.get<{ success: boolean; data: UserGrade[] }>('/insurtech/users/grades');
   if (!response.success) throw new Error('Failed to fetch user grades');
-  console.log ("response data", response.data)
+
   return response.data;
 };
 

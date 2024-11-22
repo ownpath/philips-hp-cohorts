@@ -120,11 +120,11 @@ const LandscapeEnforcer: React.FC<{ children: React.ReactNode }> = ({ children }
 // Main container layout component
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-white overflow-hidden">
+    <div className="fixed inset-0 w-screen h-screen bg-white">
       <div className="w-full h-full flex items-center justify-center p-1 landscape:p-2 sm:p-2 md:p-4">
         <div 
           className="relative bg-white rounded-xl shadow-lg w-full h-full 
-                     max-w-dashboard max-h-dashboard overflow-hidden
+                     max-w-dashboard max-h-dashboard 
                      landscape:max-h-[100vh]"
           style={{ aspectRatio: '16/9' }}
         >

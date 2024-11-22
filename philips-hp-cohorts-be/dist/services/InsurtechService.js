@@ -169,7 +169,7 @@ class InsurtechService {
                     heartEnergyLevel: result.stats[0].averageValue,
                     claimRiskStatus: this.getClaimRiskStatus(result.stats[0].averageGrade),
                     cohortHealth: result.stats[0].averageGrade,
-                    cohortStressLevel: this.getCohortStressLevel(result.stats[0].averageValue),
+                    cohortStressLevel: this.getCohortStressLevel(result.stats[0].averageGrade),
                     gradeDistribution,
                     lastUpdated: result.stats[0].latestTimestamp,
                     bubbleGroups: groups,
@@ -260,6 +260,9 @@ class InsurtechService {
         return 'High'; // Dark Orange/Dark Amber
     }
     static getCohortStressLevel(grade) {
+        // Add debug logs
+        console.log('Grade before rounding:', grade);
+        console.log('Rounded grade:', Math.round(grade));
         // Round the grade to handle decimal values
         const roundedGrade = Math.round(grade);
         if (roundedGrade <= 1)
